@@ -1,0 +1,28 @@
+#!/bin/sh
+
+toolchain_mount_directory()
+{
+    toolchain_mount_directory="$1"
+
+    if [ ! -d "$toolchain_mount_directory" ]
+    then
+        toolchain_console_error "Mount directory: $toolchain_mount_directory"
+    fi
+
+    toolchain_console_success "Mount directory: $toolchain_mount_directory"
+}
+
+toolchain_mount()
+{
+    if ! mountpoint --quiet "$toolchain_mount_directory"
+    then
+        if ! mount --options bind                                              \
+            "$toolchain_directory"                                             \
+            "$toolchain_mount_directory" 2> "/dev/null"
+        then
+            toolchain_console_error "Mount: $toolchain_mount_directory"
+        fi
+    fi
+
+    toolchain_console_success "Mount: $toolchain_mount_directory"
+}

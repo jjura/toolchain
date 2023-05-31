@@ -1,0 +1,45 @@
+#!/bin/bash
+
+toolchain_chroot_directory()
+{
+    toolchain_chroot_directory="$toolchain_root"
+
+    if [ "$toolchain_package_chroot" = "false" ]
+    then
+        toolchain_chroot_directory="/"
+    fi
+}
+
+toolchain_chroot_command()
+{
+    toolchain_chroot_command="$1"
+
+	cat <<- EOF
+		export MAKEFLAGS="-j8"
+		export PATH=$toolchain_root/tools/bin:\$PATH
+
+		cd "$toolchain_build"
+
+		package_root="$toolchain_root"
+		package_build="$toolchain_build"
+		package_source="$toolchain_source"
+		package_target="$toolchain_target"
+
+		. "$toolchain_recipe"
+
+		eval "$toolchain_chroot_command" 1> "$toolchain_log" 2> "$toolchain_log"
+	EOF
+}
+
+toolchain_chroot()
+{
+    toolchain_chroot="$1"
+    toolchain_chroot_command="$(toolchain_chroot_command "$toolchain_chroot")"
+
+    if ! chroot "$toolchain_chroot_directory" "sh" "-c" "$toolchain_chroot_command"
+    then
+        toolchain_console_error "Chroot: $toolchain_chroot"
+    fi
+
+    toolchain_console_success "Chroot: $toolchain_chroot"
+}

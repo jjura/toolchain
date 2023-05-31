@@ -1,0 +1,36 @@
+#!/bin/sh
+
+package_name="glibc"
+package_version="2.37"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.xz"
+package_chroot="false"
+
+package_configure()
+{
+    ln --symbolic "../lib/ld-linux-x86-64.so.2" "$package_root/lib64"
+    ln --symbolic "../lib/ld-linux-x86-64.so.2" "$package_root/lib64/ld-lsd-x86-64.so.3"
+
+    echo "rootsbindir=/usr/sbin" > "configparms"
+
+    "$package_source/configure"                                                \
+        --host="$package_target"                                               \
+        --build="$("$package_source/scripts/config.guess")"                    \
+        --prefix="/usr"                                                        \
+        --with-headers="$package_root/usr/include"                             \
+        --enable-kernel="3.2"                                                  \
+        libc_cv_slibdir="/usr/lib"
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make DESTDIR="$package_root" install
+
+    sed "/RTLDLIST=/s:/usr::g" -i "$package_root/usr/bin/ldd"
+
+    "$package_root/tools/libexec/gcc/$package_target/12.2.0/install-tools/mkheaders"
+}

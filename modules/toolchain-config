@@ -1,0 +1,15 @@
+#!/bin/sh
+
+toolchain_config()
+{
+    toolchain_config="$toolchain_directory/config"
+
+    if [ ! -f "$toolchain_config" ]
+    then
+        toolchain_console_error "Config: $toolchain_config"
+    fi
+
+    . "$toolchain_config"
+
+    toolchain_console_success "Config: $toolchain_config"
+}

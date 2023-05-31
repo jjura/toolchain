@@ -1,0 +1,25 @@
+#!/bin/sh
+
+package_name="linux"
+package_version="6.1.11"
+package_address="https://cdn.kernel.org/pub/$package_name/kernel/v6.x/$package_name-$package_version.tar.xz"
+package_chroot="false"
+
+package_configure()
+{
+    make -C "$package_source" mrproper
+}
+
+package_build()
+{
+    make -C "$package_source" headers
+}
+
+package_install()
+{
+    find "$package_source/usr/include" -type f -not -name "*.h" -delete
+
+    cp --recursive                                                             \
+        "$package_source/usr/include"                                          \
+        "$package_root/usr"
+}

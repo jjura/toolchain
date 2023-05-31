@@ -1,0 +1,21 @@
+#!/bin/sh
+
+toolchain_build_directory()
+{
+    toolchain_build_directory="$toolchain_package_directory/builds"
+
+    if [ ! -d "$toolchain_build_directory" ]
+    then
+        mkdir "$toolchain_build_directory"
+    fi
+}
+
+toolchain_build()
+{
+    toolchain_build="$toolchain_build_directory/$toolchain_package"
+
+    if [ ! -d "$toolchain_build" ]
+    then
+        mkdir "$toolchain_build"
+    fi
+}

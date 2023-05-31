@@ -1,0 +1,36 @@
+#!/bin/sh
+
+toolchain_recipe_directory()
+{
+    toolchain_recipe_directory="$toolchain_mount/recipes"
+
+    if [ ! -d "$toolchain_recipe_directory" ]
+    then
+        toolchain_console_error "Recipe directory: $toolchain_recipe_directory"
+    fi
+
+    toolchain_console_success "Recipe directory: $toolchain_recipe_directory"
+}
+
+toolchain_recipe()
+{
+    toolchain_recipe="$toolchain_recipe_directory/$toolchain_package"
+
+    if [ ! -f "$toolchain_recipe" ]
+    then
+        toolchain_console_error "Recipe: $toolchain_recipe"
+    fi
+
+    toolchain_console_success "Recipe: $toolchain_recipe"
+}
+
+toolchain_recipe_property()
+{
+    toolchain_recipe_property="$1"
+
+	sh <<- EOF
+		. "$toolchain_recipe"
+
+		echo "$toolchain_recipe_property"
+	EOF
+}

@@ -1,0 +1,42 @@
+#!/bin/sh
+
+package_name="ncurses"
+package_version="6.4"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.gz"
+package_chroot="false"
+
+package_configure()
+{
+    sed "s/mawk//" -i "$package_source/configure"
+
+    "$package_source/configure"
+
+    make -C include
+    make -C progs tic
+
+    "$package_source/configure"                                                \
+        --prefix="/usr"                                                        \
+        --host="$package_target"                                               \
+        --build="$("$package_source/config.guess")"                            \
+        --mandir="/usr/share/man"                                              \
+        --with-cxx-shared                                                      \
+        --with-manpage-format="normal"                                         \
+        --with-shared                                                          \
+        --without-ada                                                          \
+        --without-debug                                                        \
+        --without-normal                                                       \
+        --disable-stripping                                                    \
+        --enable-widec
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make LD_LIBRARY_PATH="$package_build/lib" DESTDIR="$package_root" TIC_PATH="$package_build/progs/tic" install
+
+    echo "INPUT(-lncursesw)" > "$package_root/usr/lib/libncurses.so"
+}

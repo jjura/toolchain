@@ -1,0 +1,28 @@
+#!/bin/sh
+
+toolchain_archive_directory()
+{
+    toolchain_archive_directory="$toolchain_package_directory/archives"
+
+    if [ ! -d "$toolchain_archive_directory" ]
+    then
+        mkdir "$toolchain_archive_directory"
+    fi
+}
+
+toolchain_archive()
+{
+    toolchain_archive="$toolchain_archive_directory/$(basename "$toolchain_package_address")"
+
+    if [ ! -f "$toolchain_archive" ]
+    then
+        if ! wget --quiet --output-document                                    \
+            "$toolchain_archive"                                               \
+            "$toolchain_package_address"
+        then
+            toolchain_console_error "Archive: $toolchain_archive"
+        fi
+    fi
+
+    toolchain_console_success "Archive: $toolchain_archive"
+}

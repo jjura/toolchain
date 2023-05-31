@@ -1,0 +1,34 @@
+#!/bin/sh
+
+package_name="file"
+package_version="5.44"
+package_address="https://astron.com/pub/$package_name/$package_name-$package_version.tar.gz"
+package_chroot="false"
+
+package_configure()
+{
+    "$package_source/configure"                                                \
+        --disable-bzlib                                                        \
+        --disable-libseccomp                                                   \
+        --disable-xzlib                                                        \
+        --disable-zlib
+
+    make
+
+    "$package_source/configure"                                                \
+        --prefix="/usr"                                                        \
+        --host="$package_target"                                               \
+        --build="$("$package_source/config.guess")"
+}
+
+package_build()
+{
+    make FILE_COMPILE="$package_build/src/file"
+}
+
+package_install()
+{
+    make DESTDIR="$package_root" install
+
+    rm "$package_root/usr/lib/libmagic.la"
+}

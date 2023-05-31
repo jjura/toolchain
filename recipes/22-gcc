@@ -1,0 +1,51 @@
+#!/bin/sh
+
+package_name="gcc"
+package_version="12.2.0"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version/$package_name-$package_version.tar.xz"
+package_chroot="false"
+
+package_configure()
+{
+    cd "$package_source"
+
+    "$package_source/contrib/download_prerequisites"
+
+    cd "$package_build"
+
+    sed '/thread_header =/s/@.*@/gthr-posix.h/' -i                             \
+        "$package_source/libgcc/Makefile.in"                                   \
+        "$package_source/libstdc++-v3/include/Makefile.in"
+
+    sed -e "/m64=/s/lib64/lib/" -i "$package_source/gcc/config/i386/t-linux64"
+
+    "$package_source/configure"                                                \
+        --build="$("$package_source/config.guess")"                            \
+        --host="$package_target"                                               \
+        --target="$package_target"                                             \
+        --prefix="/usr"                                                        \
+        --with-build-sysroot="$package_root"                                   \
+        --disable-nls                                                          \
+        --disable-multilib                                                     \
+        --disable-libatomic                                                    \
+        --disable-libgomp                                                      \
+        --disable-libquadmath                                                  \
+        --disable-libssp                                                       \
+        --disable-libvtv                                                       \
+        --enable-default-pie                                                   \
+        --enable-default-ssp                                                   \
+        --enable-languages="c,c++"                                             \
+        LDFLAGS_FOR_TARGET=-L"$package_build/$package_target/libgcc"
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make DESTDIR="$package_root" install
+
+    ln --symbolic "gcc" "$package_root/usr/bin/cc"
+}

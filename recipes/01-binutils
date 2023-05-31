@@ -1,0 +1,27 @@
+#!/bin/sh
+
+package_name="binutils"
+package_version="2.40"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.xz"
+package_chroot="false"
+
+package_configure()
+{
+    "$package_source/configure"                                                \
+        --target="$package_target"                                             \
+        --prefix="$package_root/tools"                                         \
+        --with-sysroot="$package_root"                                         \
+        --disable-nls                                                          \
+        --disable-werror                                                       \
+        --enable-gprofng="no"
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make install
+}

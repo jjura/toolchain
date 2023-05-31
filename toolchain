@@ -1,0 +1,67 @@
+#!/bin/sh
+
+# Toolchain directory:
+toolchain_directory="$PWD"
+
+# Toolchain modules:
+. "$toolchain_directory/modules/toolchain-archive"
+. "$toolchain_directory/modules/toolchain-build"
+. "$toolchain_directory/modules/toolchain-chroot"
+. "$toolchain_directory/modules/toolchain-config"
+. "$toolchain_directory/modules/toolchain-console"
+. "$toolchain_directory/modules/toolchain-log"
+. "$toolchain_directory/modules/toolchain-mount"
+. "$toolchain_directory/modules/toolchain-package"
+. "$toolchain_directory/modules/toolchain-recipe"
+. "$toolchain_directory/modules/toolchain-root"
+. "$toolchain_directory/modules/toolchain-source"
+
+# Toolchain configuration:
+toolchain_config
+
+# Toolchain host mount:
+toolchain_mount_directory "$toolchain_mount"
+toolchain_mount
+
+# Toolchain root:
+toolchain_root_directory
+toolchain_root
+
+# Toolchain target mount:
+toolchain_mount_directory "$toolchain_root$toolchain_mount"
+toolchain_mount
+
+# Toolchain packages:
+for toolchain_package in $toolchain_packages
+do
+    # Toolchain recipe:
+    toolchain_recipe_directory
+    toolchain_recipe
+
+    # Toolchain package:
+    toolchain_package_directory
+    toolchain_package_address
+    toolchain_package_chroot
+
+    # Toolchain archive:
+    toolchain_archive_directory
+    toolchain_archive
+
+    # Toolchain source:
+    toolchain_source_directory
+    toolchain_source
+
+    # Toolchain build:
+    toolchain_build_directory
+    toolchain_build
+
+    # Toolchain log:
+    toolchain_log_directory
+    toolchain_log
+
+    # Toolchain chroot:
+    toolchain_chroot_directory
+    toolchain_chroot "package_configure"
+    toolchain_chroot "package_build"
+    toolchain_chroot "package_install"
+done

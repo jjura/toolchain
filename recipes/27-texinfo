@@ -1,0 +1,21 @@
+#!/bin/sh
+
+package_name="texinfo"
+package_version="7.0.2"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.xz"
+package_chroot="true"
+
+package_configure()
+{
+    "$package_source/configure" --prefix="/usr"
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make install
+}

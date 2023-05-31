@@ -1,0 +1,32 @@
+#!/bin/sh
+
+package_name="gcc"
+package_version="12.2.0"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version/$package_name-$package_version.tar.xz"
+package_chroot="false"
+
+package_configure()
+{
+    "$package_source/libstdc++-v3/configure"                                   \
+        --host="$package_target"                                               \
+        --build="$("$package_source/config.guess")"                            \
+        --prefix="/usr"                                                        \
+        --disable-libstdcxx-pch                                                \
+        --disable-multilib                                                     \
+        --disable-nls                                                          \
+        --with-gxx-include-dir="/tools/$package_target/include/c++/12.2.0"
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make DESTDIR="$package_root" install
+
+    rm "$package_root/usr/lib/libstdc++.la"
+    rm "$package_root/usr/lib/libstdc++fs.la"
+    rm "$package_root/usr/lib/libsupc++.la"
+}

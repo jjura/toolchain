@@ -1,0 +1,35 @@
+#!/bin/sh
+
+toolchain_root_directory()
+{
+    toolchain_root_directory="$toolchain_mount/roots"
+
+    if [ ! -d "$toolchain_root_directory" ]
+    then
+        mkdir "$toolchain_root_directory"
+    fi
+}
+
+toolchain_root()
+{
+    toolchain_root="$toolchain_root_directory/$toolchain_target"
+
+    if [ ! -d "$toolchain_root" ]
+    then
+        mkdir                                                                  \
+            "$toolchain_root"                                                  \
+            "$toolchain_root/etc"                                              \
+            "$toolchain_root/mnt"                                              \
+            "$toolchain_root/usr"                                              \
+            "$toolchain_root/usr/bin"                                          \
+            "$toolchain_root/usr/lib"                                          \
+            "$toolchain_root/usr/lib64"                                        \
+            "$toolchain_root/usr/sbin"                                         \
+            "$toolchain_root/var"
+
+        ln --symbolic "usr/bin"     "$toolchain_root/bin"
+        ln --symbolic "usr/lib"     "$toolchain_root/lib"
+        ln --symbolic "usr/lib64"   "$toolchain_root/lib64"
+        ln --symbolic "usr/sbin"    "$toolchain_root/sbin"
+    fi
+}

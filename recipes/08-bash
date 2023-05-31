@@ -1,0 +1,27 @@
+#!/bin/sh
+
+package_name="bash"
+package_version="5.2.15"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.gz"
+package_chroot="false"
+
+package_configure()
+{
+    "$package_source/configure"                                                \
+        --prefix="/usr"                                                        \
+        --host="$package_target"                                               \
+        --build="$(sh "$package_source/support/config.guess")"                 \
+        --without-bash-malloc
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make DESTDIR="$package_root" install
+
+    ln --symbolic bash "$package_root/bin/sh"
+}

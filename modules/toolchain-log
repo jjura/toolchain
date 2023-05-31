@@ -1,0 +1,21 @@
+#!/bin/sh
+
+toolchain_log_directory()
+{
+    toolchain_log_directory="$toolchain_package_directory/logs"
+
+    if [ ! -d "$toolchain_log_directory" ]
+    then
+        mkdir "$toolchain_log_directory"
+    fi
+}
+
+toolchain_log()
+{
+    toolchain_log="$toolchain_log_directory/$toolchain_package"
+
+    if [ ! -f "$toolchain_log" ]
+    then
+        touch "$toolchain_log"
+    fi
+}

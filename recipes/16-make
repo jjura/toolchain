@@ -1,0 +1,25 @@
+#!/bin/sh
+
+package_name="make"
+package_version="4.4.1"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.gz"
+package_chroot="false"
+
+package_configure()
+{
+    "$package_source/configure"                                                \
+        --prefix="/usr"                                                        \
+        --host="$package_target"                                               \
+        --build="$("$package_source/build-aux/config.guess")"                  \
+        --without-guile
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make DESTDIR="$package_root" install
+}

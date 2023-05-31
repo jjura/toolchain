@@ -1,0 +1,33 @@
+#!/bin/sh
+
+package_name="coreutils"
+package_version="9.1"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.xz"
+package_chroot="false"
+
+package_configure()
+{
+    "$package_source/configure"                                                \
+        --prefix="/usr"                                                        \
+        --host="$package_target"                                               \
+        --build="$("$package_source/build-aux/config.guess")"                  \
+        --enable-install-program="hostname"                                    \
+        --enable-no-install-program="kill,uptime"
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make DESTDIR="$package_root" install
+
+    mkdir -p "$package_root/usr/share/man/man8"
+
+    mv "$package_root/usr/bin/chroot" "$package_root/usr/sbin"
+    mv "$package_root/usr/share/man/man1/chroot.1" "$package_root/usr/share/man/man8/chroot.8"
+
+    sed 's/"1"/"8"/' -i "$package_root/usr/share/man/man8/chroot.8"
+}

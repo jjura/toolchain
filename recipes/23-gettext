@@ -1,0 +1,23 @@
+#!/bin/sh
+
+package_name="gettext"
+package_version="0.21.1"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.xz"
+package_chroot="true"
+
+package_configure()
+{
+    "$package_source/configure" --disable-shared
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    cp "gettext-tools/src/msgfmt" "/usr/bin"
+    cp "gettext-tools/src/msgmerge" "/usr/bin"
+    cp "gettext-tools/src/xgettext" "/usr/bin"
+}

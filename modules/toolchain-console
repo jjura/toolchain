@@ -1,0 +1,30 @@
+#!/bin/sh
+
+toolchain_console_error()
+{
+    toolchain_console_error="$1"
+
+    if [ -z "$toolchain_package" ]
+    then
+        toolchain_console_error="Toolchain: $toolchain_console_error"
+    else
+        toolchain_console_error="$toolchain_package: $toolchain_console_error"
+    fi
+
+    echo "Error: $toolchain_console_error"
+    exit
+}
+
+toolchain_console_success()
+{
+    toolchain_console_success="$1"
+
+    if [ -z "$toolchain_package" ]
+    then
+        toolchain_console_success="Toolchain: $toolchain_console_success"
+    else
+        toolchain_console_success="$toolchain_package: $toolchain_console_success"
+    fi
+
+    echo "Success: $toolchain_console_success"
+}

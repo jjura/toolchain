@@ -1,0 +1,32 @@
+#!/bin/sh
+
+toolchain_source_directory()
+{
+    toolchain_source_directory="$toolchain_package_directory/sources"
+
+    if [ ! -d "$toolchain_source_directory" ]
+    then
+        mkdir "$toolchain_source_directory"
+    fi
+}
+
+toolchain_source()
+{
+    toolchain_source="$toolchain_source_directory/$toolchain_package"
+
+    if [ ! -d "$toolchain_source" ]
+    then
+        mkdir "$toolchain_source"
+
+        if ! tar                                                               \
+            --extract                                                          \
+            --file "$toolchain_archive"                                        \
+            --directory "$toolchain_source"                                    \
+            --strip-components 1
+        then
+            toolchain_console_error "Source: $toolchain_source"
+        fi
+    fi
+
+    toolchain_console_success "Source: $toolchain_source"
+}

@@ -1,0 +1,34 @@
+#!/bin/sh
+
+package_name="util-linux"
+package_version="2.38.1"
+package_address="https://mirrors.edge.kernel.org/pub/linux/utils/$package_name/v2.38/$package_name-$package_version.tar.xz"
+package_chroot="true"
+
+package_configure()
+{
+    "$package_source/configure"                                                \
+        ADJTIME_PATH="/var/lib/hwclock/adjtime"                                \
+        --libdir="/usr/lib"                                                    \
+        --docdir="/usr/share/doc/$package_name-$package_version"               \
+        --disable-chfn-chsh                                                    \
+        --disable-login                                                        \
+        --disable-nologin                                                      \
+        --disable-su                                                           \
+        --disable-setpriv                                                      \
+        --disable-runuser                                                      \
+        --disable-pylibmount                                                   \
+        --disable-static                                                       \
+        --without-python                                                       \
+        runstatedir="/run"
+    }
+
+    package_build()
+    {
+        make
+    }
+
+    package_install()
+    {
+        make install
+    }

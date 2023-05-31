@@ -1,0 +1,43 @@
+#!/bin/sh
+
+package_name="binutils"
+package_version="2.40"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.xz"
+package_chroot="false"
+
+package_configure()
+{
+    sed '6009s/$add_dir//' -i "ltmain.sh"
+
+    "$package_source/configure"                                                \
+        --prefix="/usr"                                                        \
+        --build="$("$package_source/config.guess")"                            \
+        --host="$package_target"                                               \
+        --disable-nls                                                          \
+        --disable-werror                                                       \
+        --enable-64-bit-bfd                                                    \
+        --enable-shared                                                        \
+        --enable-gprofng="no"
+}
+
+package_build()
+{
+    make
+}
+
+package_install()
+{
+    make DESTDIR="$package_root" install
+
+    rm "$package_root/usr/lib/libbfd.a"
+    rm "$package_root/usr/lib/libbfd.la"
+
+    rm "$package_root/usr/lib/libctf.a"
+    rm "$package_root/usr/lib/libctf.la"
+
+    rm "$package_root/usr/lib/libctf-nobfd.a"
+    rm "$package_root/usr/lib/libctf-nobfd.la"
+
+    rm "$package_root/usr/lib/libopcodes.a"
+    rm "$package_root/usr/lib/libopcodes.la"
+}
