@@ -1,0 +1,23 @@
+#!/bin/bash
+
+package_name="gzip"
+package_version="1.13"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.gz"
+
+function do_configure
+{
+    "$package_source/configure"         \
+        --build="$(uname -m)-linux-gnu" \
+        --host="$toolchain_target"      \
+        --prefix="/usr"
+}
+
+function do_build
+{
+    make
+}
+
+function do_install
+{
+    make DESTDIR="$toolchain_root" install
+}

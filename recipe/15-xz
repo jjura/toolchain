@@ -1,0 +1,25 @@
+#!/bin/bash
+
+package_name="xz"
+package_version="5.6.4"
+package_address="https://github.com/tukaani-project/xz/releases/download/v$package_version/$package_name-$package_version.tar.xz"
+
+function do_configure
+{
+    "$package_source/configure"                       \
+        --build="$(uname -m)-linux-gnu"               \
+        --disable-static                              \
+        --docdir="/usr/share/doc/xz-$package_version" \
+        --prefix="/usr"                               \
+        --host="$package_target"
+}
+
+function do_build
+{
+    make
+}
+
+function do_install
+{
+    make DESTDIR="$toolchain_root" install
+}

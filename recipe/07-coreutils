@@ -1,0 +1,25 @@
+#!/bin/bash
+
+package_name="coreutils"
+package_version="9.6"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.gz"
+
+function do_configure
+{
+    "$package_source/configure"                   \
+        --build="$(uname -m)-linux-gnu"           \
+        --enable-install-program="hostname"       \
+        --enable-no-install-program="kill,uptime" \
+        --host="$toolchain_target"                \
+        --prefix="/usr"
+}
+
+function do_build
+{
+    make
+}
+
+function do_install
+{
+    make DESTDIR="$toolchain_root" install
+}

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+package_name="linux"
+package_version="6.13.4"
+package_address="https://www.kernel.org/pub/linux/kernel/v6.x/$package_name-$package_version.tar.gz"
+
+function do_configure
+{
+    make --directory "$package_source" mrproper
+}
+
+function do_build
+{
+    make --directory "$package_source" headers
+}
+
+function do_install
+{
+    find "$package_source/usr/include" -type f -not -name "*.h" -delete
+
+    cp --recursive "$package_source/usr/include" "$toolchain_root/usr"
+}

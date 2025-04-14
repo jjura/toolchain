@@ -1,0 +1,47 @@
+#!/bin/bash
+
+package_name="gcc"
+package_version="14.2.0"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version/$package_name-$package_version.tar.gz"
+
+function do_configure
+{
+    cd "$package_source"
+
+    "$package_source/contrib/download_prerequisites"
+
+    cd "$package_build"
+
+    sed --expression "/m64=/s/lib64/lib/" \
+        --in-place "$package_source/gcc/config/i386/t-linux64"
+
+    "$package_source/configure"                                        \
+        LDFLAGS_FOR_TARGET=-L"$package_build/$toolchain_target/libgcc" \
+        --build="$(uname -m)-linux-gnu"                                \
+        --disable-libatomic                                            \
+        --disable-libgomp                                              \
+        --disable-libquadmath                                          \
+        --disable-libsanititzer                                        \
+        --disable-libssp                                               \
+        --disable-libstdcxx                                            \
+        --disable-libvtv                                               \
+        --disable-multilib                                             \
+        --disable-nls                                                  \
+        --enable-default-pie                                           \
+        --enable-default-ssp                                           \
+        --enable-languages="c"                                         \
+        --host="$toolchain_target"                                     \
+        --prefix="/usr"                                                \
+        --target="$toolchain_target"                                   \
+        --with-build-sysroot="$toolchain_root"
+}
+
+function do_build
+{
+    make
+}
+
+function do_install
+{
+    make DESTDIR="$toolchain_root" install
+}

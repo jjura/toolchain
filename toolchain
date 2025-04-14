@@ -1,0 +1,136 @@
+#!/bin/bash
+
+function package_recipe
+{
+    package_recipe="$toolchain_directory/recipe/$toolchain_package"
+
+    source "$package_recipe"
+}
+
+function package_archive
+{
+    package_archive="$toolchain_build/archive/$(basename "$package_address")"
+
+    if [ ! -f "$package_archive" ]
+    then
+        wget                                   \
+            --quiet                            \
+            --show-progress "$package_address" \
+            --output-document "$package_archive"
+    fi
+}
+
+function package_source
+{
+    package_source="$toolchain_build/source/$(basename "$package_recipe")"
+
+    if [ ! -d "$package_source" ]
+    then
+        mkdir "$package_source"
+
+        tar --extract                     \
+            --file "$package_archive"     \
+            --directory "$package_source" \
+            --strip-components="1"
+    fi
+}
+
+function package_build
+{
+    package_build="$toolchain_build/build/$(basename "$package_recipe")"
+
+    if [ ! -d "$package_build" ]
+    then
+        mkdir "$package_build" && cd "$package_build"
+
+        do_configure
+        do_build
+        do_install
+    fi
+}
+
+function toolchain_directory
+{
+    toolchain_directory="$(realpath "$0")"
+    toolchain_directory="$(dirname "$toolchain_directory")"
+}
+
+function toolchain_build
+{
+    toolchain_build="$toolchain_directory/build"
+
+    if [ ! -d "$toolchain_build" ]
+    then
+        mkdir --parents                \
+            "$toolchain_build/archive" \
+            "$toolchain_build/build"   \
+            "$toolchain_build/source"
+    fi
+}
+
+function toolchain_root
+{
+    toolchain_root="$toolchain_build/root"
+
+    if [ ! -d "$toolchain_root" ]
+    then
+        for directory in \
+            "bin"        \
+            "lib"        \
+            "lib64"      \
+            "sbin"
+        do
+            mkdir --parents "$toolchain_root/usr/$directory"
+
+            ln --symbolic "usr/$directory" "$toolchain_root/$directory"
+        done
+
+        mkdir "$toolchain_root/etc"
+    fi
+}
+
+function toolchain_target
+{
+    toolchain_target="$(uname -m)-toolchain-linux-gnu"
+}
+
+function toolchain_packages
+{
+    toolchain_packages="
+        01-binutils
+        02-gcc
+        03-linux
+        04-glibc
+        05-bash
+        06-binutils
+        07-coreutils
+        08-gcc
+        09-grep
+        10-gzip
+        l1-make
+        12-sed
+        13-tar
+        14-wget
+        15-xz"
+}
+
+function toolchain
+{
+    toolchain_directory
+    toolchain_build
+    toolchain_root
+    toolchain_target
+    toolchain_packages
+
+    export PATH="$toolchain_root/toolchain/bin:$PATH"
+
+    for toolchain_package in $toolchain_packages
+    do
+        package_recipe
+        package_archive
+        package_source
+        package_build
+    done
+}
+
+toolchain

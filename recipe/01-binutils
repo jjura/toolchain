@@ -1,0 +1,28 @@
+#!/bin/bash
+
+package_name="binutils"
+package_version="2.44"
+package_address="https://sourceware.org/pub/$package_name/releases/$package_name-$package_version.tar.gz"
+
+function do_configure
+{
+    "$package_source/configure"              \
+        --disable-gprofng                    \
+        --disable-nls                        \
+        --disable-werror                     \
+        --enable-default-hash-style="gnu"    \
+        --enable-new-dtags                   \
+        --prefix="$toolchain_root/toolchain" \
+        --target="$toolchain_target"         \
+        --with-sysroot="$toolchain_root"
+}
+
+function do_build
+{
+    make
+}
+
+function do_install
+{
+    make install
+}

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+package_name="make"
+package_version="4.4.1"
+package_address="https://ftp.gnu.org/gnu/$package_name/$package_name-$package_version.tar.gz"
+
+function do_configure
+{
+    "$package_source/configure"         \
+        --build="$(uname -m)-linux-gnu" \
+        --host="$toolchain_target"      \
+        --prefix="/usr"                 \
+        --without-guile
+}
+
+function do_build
+{
+    make
+}
+
+function do_install
+{
+    make DESTDIR="$toolchain_root" install
+}
